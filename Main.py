@@ -1,18 +1,13 @@
 import falcon
 import json
 
+import spacy
 
-class CompaniesResource(object):
-    companies = [{"id": 1, "name": "Company One"}, {"id": 2, "name": "Company Two"}]
-
-    def on_get(self, req, resp):
-        resp.body = json.dumps(self.companies)
-
-    def on_post(self, req, resp):
-        resp.status = falcon.HTTP_201
-        resp.body = json.dumps({"success": True})
-
+from NerServer import NerEndpoint
+from TokenizeServer import TokenizeEndpoint
 
 api = falcon.API()
-companies_endpoint = CompaniesResource()
-api.add_route('/companies', companies_endpoint)
+token_endpoint = TokenizeEndpoint()
+ner_endpoint=NerEndpoint()
+api.add_route('/tokenizer', token_endpoint)
+api.add_route('/ner', ner_endpoint)
