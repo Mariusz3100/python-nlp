@@ -15,7 +15,9 @@ class TokenizeEndpoint(object):
         self.encoder = TokenEncoder()
 
     def on_get(self, req, resp):
-        body = self.encoder.encode(self.nlp(req.params["param"]))
+        phrase = self.nlp(req.params["param"])
+        tokens = self.encoder.encode(phrase)
+        body = {"phrase": phrase, "tokens": tokens}
         resp.body = json.dumps(body)
 
     def on_post(self, req, resp):
