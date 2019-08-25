@@ -15,11 +15,13 @@ class TokenizeEndpoint(object):
         self.encoder = TokenEncoder()
 
     def on_get(self, req, resp):
-        phrase = self.nlp(req.params["param"])
-        tokens = self.encoder.encode(phrase)
-        body = {"phrase": phrase, "tokens": tokens}
-        resp.body = json.dumps(body)
 
-    def on_post(self, req, resp):
-        resp.status = falcon.HTTP_201
-        resp.body = json.dumps({"success": True})
+        if 'param' not in req.params:
+            body = {"phrase": "", "tokens": {}}
+            resp.body = json.dumps(body)
+        else:
+            phrase = req.params["param"]
+            tokens = self.nlp(phrase)
+            encodedTokens = self.encoder.encode(tokens)
+            body = {"phrase": phrase, "tokens": encodedTokens}
+            resp.body = json.dumps(body)
