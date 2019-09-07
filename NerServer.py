@@ -1,4 +1,3 @@
-
 import falcon
 import json
 
@@ -14,10 +13,20 @@ class NerEndpoint(object):
         self.encoder = NerEncoder()
 
     def on_get(self, req, resp):
-        doc = self.nlp(req.params["param"])
-        body = self.encoder.encode(doc.ents)
-        resp.body = json.dumps(body)
-
-    def on_post(self, req, resp):
-        resp.status = falcon.HTTP_201
-        resp.body = json.dumps({"success": True})
+        if 'param' not in req.params:
+            body = {"phrase": "", "entities": {}}
+            resp.body = json.dumps(body)
+            resp.status = falcon.HTTP_200
+            resp.set_header('Access-Control-Allow-Origin', '*')
+            resp.set_header('Access-Control-Allow-Methods', 'GET')
+            resp.set_header('Access-Control-Allow-Headers', 'Content-Type')
+        else:
+            phrase = req.params["param"]
+            doc = self.nlp(phrase)
+            encodedEntities = self.encoder.encode(doc.ents)
+            body = {"phrase": phrase, "entities": encodedEntities}
+            resp.body = json.dumps(body)
+            resp.status = falcon.HTTP_200
+            resp.set_header('Access-Control-Allow-Origin', '*')
+            resp.set_header('Access-Control-Allow-Methods', 'GET')
+            resp.set_header('Access-Control-Allow-Headers', 'Content-Type')
